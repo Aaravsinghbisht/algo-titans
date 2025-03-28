@@ -2,25 +2,27 @@ import json
 from resume_summary import get_resume_data
 from ranker import compute_score
 
+html_head = """
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Ranked Resumes</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .candidate { border: 1px solid #ddd; padding: 15px; margin: 10px 0; }
+        .score { color: #2196F3; font-weight: bold; }
+    </style>
+</head>
+<body>
+"""
+
+html_tail = """
+</body>
+</html>
+"""
+
 def generate_html(ranked_resumes, output_file="ranked_resumes.html"):
-    html_head = """
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <meta charset="UTF-8">
-        <title>Ranked Resumes</title>
-        <style>
-            body { font-family: Arial, sans-serif; margin: 20px; }
-            .resume-box { border: 1px solid #ccc; padding: 15px; margin-bottom: 20px; border-radius: 5px; }
-            .resume-header { font-size: 1.5em; margin-bottom: 10px; color: #333; }
-            .resume-score { font-size: 1.2em; color: #007BFF; }
-            .resume-section { margin-bottom: 10px; }
-            .section-title { font-weight: bold; }
-        </style>
-    </head>
-    <body>
-        <h1>Ranked Resumes</h1>
-    """
+    
     html_body = ""
     for idx, candidate in enumerate(ranked_resumes, start=1):
         name = candidate.get("Name") or candidate.get("name", "Unknown")
@@ -37,22 +39,17 @@ def generate_html(ranked_resumes, output_file="ranked_resumes.html"):
         improvements = candidate.get("Areas for Improvement", candidate.get("improvements", "Not available"))
         
         candidate_html = f"""
-        <div class="resume-box">
-            <div class="resume-header">{idx}. {name}</div>
-            <div class="resume-score">Score: {score}</div>
-            <div class="resume-section"><span class="section-title">Email:</span> {email}</div>
-            <div class="resume-section"><span class="section-title">Phone:</span> {phone}</div>
-            <div class="resume-section"><span class="section-title">Professional Summary:</span> {professional_summary}</div>
-            <div class="resume-section"><span class="section-title">Skills:</span> {skills}</div>
-            <div class="resume-section"><span class="section-title">Weaknesses:</span> {weaknesses}</div>
-            <div class="resume-section"><span class="section-title">Areas for Improvement:</span> {improvements}</div>
+        <div class="candidate">
+            <h2>{idx}. {name} <span class="score">Score: {score}</span></h2>
+            <p><strong>Contact:</strong> {email} | {phone}</p>
+            <p><strong>Summary:</strong> {professional_summary}</p>
+            <p><strong>Skills:</strong> {skills}</p>
+            <p><strong>Weaknesses:</strong> {weaknesses}</p>
+            <p><strong>Improvements:</strong> {improvements}</p>
         </div>
         """
         html_body += candidate_html
-    html_tail = """
-    </body>
-    </html>
-    """
+   
     html_content = html_head + html_body + html_tail
     with open(output_file, "w", encoding="utf-8") as f:
         f.write(html_content)
@@ -67,3 +64,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
